@@ -1,6 +1,5 @@
 import PostModel from "../models/Post.js";
-
-
+import UserModel from "../models/User.js";
 export const getAll = async (req, res) => {
   try {
     const posts = await PostModel.find().populate("user").exec();
@@ -76,7 +75,6 @@ export const remove = async (req, res) => {
     res.json({
       success: true,
     });
-    
   } catch (err) {
     console.log(err);
     res.status(500).json({
@@ -131,3 +129,133 @@ export const update = async (req, res) => {
     });
   }
 };
+
+
+
+export const saveToProfile = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.userId;
+    const user = await UserModel.findById(userId);
+    const post = await PostModel.findById(postId);
+    if (!user.savedPosts) {
+      user.savedPosts = []; 
+    }
+    user.savedPosts.push(postId); 
+    await user.save();
+    if (!post) {
+      return res.status(404).json({
+        message: "Пост не знайдено",
+      });
+    }
+
+    res.json({
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Не вдалося зберегти пост у профіль",
+    });
+  }
+};
+
+export const showSavePost = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const user = await UserModel.findById(userId).populate("savedPosts");
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Користувач не знайдений",
+      });
+    }
+
+    res.status(200).json(user.savedPosts);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Не вдалося отримати збережені пости",
+    });
+  }
+};
+
+export const removeFromProfile = async (req, res) => {
+  try {
+    const postId = req.params.id;
+    const userId = req.userId;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Користувач не знайдений",
+      });
+    }
+
+    if (user.savedPosts.includes(postId)) {
+      user.savedPosts = user.savedPosts.filter(
+        (savedPost) => savedPost.toString() !== postId
+      );
+      await user.save();
+    }
+
+    res.json({
+      success: true,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Не вдалося видалити пост зі збережених",
+    });
+  }
+};
+
+
+
+
+// export const removeFromProfile = async (req, res) => {
+//   try {
+//     const postId = req.params.id;
+//     const userId = req.userId;
+
+//     // Get the user by userId
+//     const user = await UserModel.findById(userId);
+
+//     // Check if the user exists
+//     if (!user) {
+//       return res.status(404).json({
+//         message: "User not found",
+//       });
+//     }
+
+//     // Initialize savedPosts as an empty array if it's undefined
+//     user.savedPosts = user.savedPosts || [];
+
+//     // Find the index of the post in the savedPosts array
+//     const postIndex = user.savedPosts.findIndex((savedPost) => savedPost._id.toString() === postId);
+
+//     // Check if the post is found in savedPosts
+//     if (postIndex === -1) {
+//       return res.status(404).json({
+//         message: "Post not found in saved",
+//       });
+//     }
+
+//     // Remove the post from the savedPosts array
+//     user.savedPosts.splice(postIndex, 1);
+
+//     // Save the updated user
+//     await user.save();
+
+//     res.json({
+//       success: true,
+//     });
+//   } catch (err) {
+//     console.log(err);
+//     res.status(500).json({
+//       message: "Failed to remove post from saved",
+//     });
+//   }
+// };

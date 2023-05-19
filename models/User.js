@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const UserSchema = new mongoose.Schema(
   {
     //роль
-    role:{
+    role: {
       type: String,
       required: true,
     },
@@ -21,10 +21,16 @@ const UserSchema = new mongoose.Schema(
       required: true,
     },
     avatarUrl: String,
+    savedPosts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+      },
+    ],
   },
   {
     timestamps: true,
   }
 );
 
-export default mongoose.model('User', UserSchema)
+export default mongoose.model("User", UserSchema);

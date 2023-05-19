@@ -10,12 +10,13 @@ import {registerValidation, loginValidation, postCreateValidation,} from "./vali
 import {UserController, PostController} from "./controllers/index.js";
 import {checkAuth, handelValidationErrors}from "./utils/index.js";
 
+import { KEY_MONGODB } from "./key.js";
 
 mongoose
   .connect(
-    "mongodb+srv://bo12345fff:123456q@node-api.ppfibgf.mongodb.net/blog?retryWrites=true&w=majority"
+    KEY_MONGODB
   )
-  .then(() => console.log("DB       work"))
+  .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
 const app = express();
@@ -55,9 +56,15 @@ app.post("/posts", checkAuth, postCreateValidation,handelValidationErrors, PostC
 app.patch("/posts/:id", checkAuth, postCreateValidation, handelValidationErrors, PostController.update);
 app.delete("/posts/:id", checkAuth, PostController.remove);
 
+
+app.post('/posts/:id/save', checkAuth, PostController.saveToProfile)
+app.get('/saved-post', checkAuth, PostController.showSavePost)
+app.delete('/posts/:id/remove', checkAuth, PostController.removeFromProfile)
+
+
 app.listen(3001, (err) => {
   if (err) {
     return console.log(err);
   }
-  console.log("Server   work");
+  console.log("Server-work");
 });
