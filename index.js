@@ -1,21 +1,19 @@
 import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
-import cors from "cors"
+import cors from "cors";
 
+import {
+  registerValidation,
+  loginValidation,
+  postCreateValidation,
+} from "./validations.js";
 
-
-import {registerValidation, loginValidation, postCreateValidation,} from "./validations.js";
-
-import {UserController, PostController} from "./controllers/index.js";
-import {checkAuth, handelValidationErrors}from "./utils/index.js";
-
-import { KEY_MONGODB } from "./key.js";
+import { UserController, PostController } from "./controllers/index.js";
+import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
 mongoose
-  .connect(
-    KEY_MONGODB
-  )
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
@@ -33,36 +31,55 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(express.json());
-app.use(cors())
-app.use('/uploads', express.static('uploads'));
+app.use(cors());
+app.use("/uploads", express.static("uploads"));
 
-app.post("/auth/login", loginValidation, handelValidationErrors, UserController.login);
-app.post("/auth/register", registerValidation,handelValidationErrors, UserController.register);
+app.post(
+  "/auth/login",
+  loginValidation,
+  handelValidationErrors,
+  UserController.login
+);
+app.post(
+  "/auth/register",
+  registerValidation,
+  handelValidationErrors,
+  UserController.register
+);
 app.get("/auth/me", checkAuth, UserController.getMe);
 
 app.post("/upload", checkAuth, upload.single("image"), (req, res) => {
   res.json({
     url: `/uploads/${req.file.originalname}`,
-  }); 
+  });
 });
-
 
 app.get("/tags", PostController.getLastTags);
 
 app.get("/posts", PostController.getAll);
 app.get("/posts/tags", PostController.getLastTags);
 app.get("/posts/:id", PostController.getOne);
-app.post("/posts", checkAuth, postCreateValidation,handelValidationErrors, PostController.create);
-app.patch("/posts/:id", checkAuth, postCreateValidation, handelValidationErrors, PostController.update);
+app.post(
+  "/posts",
+  checkAuth,
+  postCreateValidation,
+  handelValidationErrors,
+  PostController.create
+);
+app.patch(
+  "/posts/:id",
+  checkAuth,
+  postCreateValidation,
+  handelValidationErrors,
+  PostController.update
+);
 app.delete("/posts/:id", checkAuth, PostController.remove);
 
+app.post("/posts/:id/save", checkAuth, PostController.saveToProfile);
+app.get("/saved-post", checkAuth, PostController.showSavePost);
+app.delete("/posts/:id/remove", checkAuth, PostController.removeFromProfile);
 
-app.post('/posts/:id/save', checkAuth, PostController.saveToProfile)
-app.get('/saved-post', checkAuth, PostController.showSavePost)
-app.delete('/posts/:id/remove', checkAuth, PostController.removeFromProfile)
-
-
-app.listen(3001, (err) => {
+app.listen(process.env.PORT || 3001, (err) => {
   if (err) {
     return console.log(err);
   }
