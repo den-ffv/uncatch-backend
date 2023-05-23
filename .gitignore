@@ -1,2 +1,4 @@
 #key of data base mongodb
+node_modules
+.env
 key.js

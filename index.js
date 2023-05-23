@@ -13,10 +13,9 @@ import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
 
-app.use(express.static('public'));
-
+const MONGODB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@node-api.ppfibgf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(MONGODB_URL)
   .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
