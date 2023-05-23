@@ -12,8 +12,11 @@ import {
 import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
+
+app.use(express.static('public'));
+
 mongoose
-  .connect(process.env.MONGODB_URL)
+  .connect(process.env.MONGODB_URI)
   .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
