@@ -12,12 +12,9 @@ import {
 import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
-import { MONGODB_URL } from "./key.js";
-
-const DB_URL = process.env.MONGODB_URL || MONGODB_URL
 
 mongoose
-  .connect(DB_URL)
+  .connect("mongodb+srv://bo12345fff:123456q@node-api.ppfibgf.mongodb.net/blog?retryWrites=true&w=majority")
   .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
