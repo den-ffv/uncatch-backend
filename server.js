@@ -12,10 +12,12 @@ import {
 import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
+import { MONGODB_URL } from "./key.js";
 
-const MONGODB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@node-api.ppfibgf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+const DB_URL = process.env.MONGODB_URL || MONGODB_URL
+
 mongoose
-  .connect(MONGODB_URL)
+  .connect(DB_URL)
   .then(() => console.log("DB-work"))
   .catch((err) => console.log("db error", err));
 
@@ -81,7 +83,10 @@ app.post("/posts/:id/save", checkAuth, PostController.saveToProfile);
 app.get("/saved-post", checkAuth, PostController.showSavePost);
 app.delete("/posts/:id/remove", checkAuth, PostController.removeFromProfile);
 
-app.listen(process.env.PORT || 3001, (err) => {
+
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, (err) => {
   if (err) {
     return console.log(err);
   }
