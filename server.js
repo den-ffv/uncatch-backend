@@ -2,7 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import multer from "multer";
 import cors from "cors";
-
+import 'dotenv/config'
 import {
   registerValidation,
   loginValidation,
@@ -12,7 +12,8 @@ import {
 import { UserController, PostController } from "./controllers/index.js";
 import { checkAuth, handelValidationErrors } from "./utils/index.js";
 
-const MONGODB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@node-api.ppfibgf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+const MONGODB_URL = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@node-api.ppfibgf.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
+
 
 mongoose
   .connect(MONGODB_URL)
